@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+
+  # PHP-FPM Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-php-fpm
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - webserver
+      - db
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php-fpm/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  # Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: ${APP_NAME}-webserver
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+
+  # PostgreSQL Service
+  db:
+    image: postgres
+    container_name: ${APP_NAME}-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+      SERVICE_TAGS: dev
+      SERVICE_NAME: postgres
+    cap_add:
+      - SYS_NICE
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+# Docker Networks
+networks:
+  app-network:
+
+# Volumes
+volumes:
+  dbdata:
