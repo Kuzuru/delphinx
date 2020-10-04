@@ -4,13 +4,13 @@ FROM php:7.4-fpm
 COPY composer.lock composer.json /var/www/
 
 # Set working directory
-WORKDIR "/var/www/"
+WORKDIR /var/www/
 
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libmcrypt-dev \
     libicu-dev \
@@ -24,7 +24,9 @@ RUN apt-get update && apt-get install -y \
     locales \
     zip \
     jpegoptim optipng pngquant gifsicle \
-    curl
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Dependencies for docker-php-ext-install
 RUN apt -yqq update
@@ -36,7 +38,7 @@ RUN apt-get update \
 
 # Install git
 RUN apt-get update \
-    && apt-get -y install git \
+    && apt-get -y --no-install-recommends install git \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Clear cache
@@ -46,7 +48,11 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo pgsql pdo_pgsql zip exif pcntl gd
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pdo pdo_pgsql
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_pgsql
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
