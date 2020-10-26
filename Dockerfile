@@ -13,7 +13,7 @@ LABEL maintainer="Kiselev Artem <raiter.man5@gmail.com>"
 COPY composer.lock composer.json /var/www/
 
 # Set working directory
-WORKDIR "/var/www/"
+WORKDIR /var/www
 
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -60,7 +60,7 @@ RUN docker-php-ext-install opcache
 COPY ./php-fpm/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Install the intl extension ( Character Encoding Support ) & Requirements for it
-RUN apt-get install -y zlib1g-dev libicu-dev g++ \
+RUN apt-get install -y --no-install-recommends zlib1g-dev libicu-dev g++ \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
@@ -93,9 +93,6 @@ USER www-data
 
 # Expose 9000 & 1215 ports
 EXPOSE 9000 1215
-
-# Start php-fpm
-CMD ["php-fpm"]
 
 # Start swoole http server
 CMD ["php", "artisan", "swoole:http", "start"]
