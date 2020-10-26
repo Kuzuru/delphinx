@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+
+shell_exec('@echo off');
+
+echo "\e[1m\e[96moO0o0Oo ... Running tests via DelphinX ... oO0o0Oo\e[0m\n";
+echo shell_exec('docker exec -it php-fpm php artisan test --env=testing');

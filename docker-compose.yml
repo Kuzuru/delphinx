@@ -7,24 +7,30 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ${APP_NAME}-php-fpm
-    restart: unless-stopped
+    container_name: php-fpm
+    restart: always
     tty: true
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: &redis-port 6379
     depends_on:
+      redis:
+        condition: service_started
       db:
         condition: service_started
     working_dir: /var/www
     volumes:
       - ./:/var/www
       - ./php-fpm/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
     networks:
-      - app-network
+      - backend
 
   # Nginx Service
-  webserver:
+  nginx:
     image: nginx:alpine
-    container_name: ${APP_NAME}-webserver
-    restart: unless-stopped
+    container_name: nginx
+    restart: always
     tty: true
     volumes:
       - ./:/var/www
@@ -37,13 +43,14 @@ services:
       app:
         condition: service_started
     networks:
-      - app-network
+      - frontend
+      - backend
 
   # PostgreSQL Service
   db:
-    image: postgres
-    container_name: ${APP_NAME}-db
-    restart: unless-stopped
+    image: postgres:alpine
+    container_name: db
+    restart: always
     tty: true
     ports:
       - "5432:5432"
@@ -51,19 +58,33 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /var/lib/postgresql/data
-      SERVICE_TAGS: dev
+      SERVICE_TAGS: production
       SERVICE_NAME: postgres
     cap_add:
       - SYS_NICE
     volumes:
       - dbdata:/var/lib/postgresql/data
     networks:
-      - app-network
+      - backend
+
+  # Redis Service
+  redis:
+    image: redis:6.0.8-alpine
+    container_name: redis
+    tty: true
+    restart: always
+    volumes:
+      - redis-data:/data:rw
+    ports: [ *redis-port, "16379:6379" ]
+    networks:
+      - backend
 
 # Docker Networks
 networks:
-  app-network:
+  frontend:
+  backend:
 
 # Volumes
 volumes:
   dbdata:
+  redis-data:
