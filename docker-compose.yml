@@ -63,7 +63,7 @@ services:
     cap_add:
       - SYS_NICE
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     networks:
       - backend
 
@@ -86,5 +86,5 @@ networks:
 
 # Volumes
 volumes:
-  dbdata:
+  db-data:
   redis-data:
