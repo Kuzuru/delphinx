@@ -10,7 +10,7 @@
 ***
 
 ## Description
-:sparkles: DelphinX is **ready-to-use** package that allows you to speed up the process of creating your laravel application. This package is based on `Docker`. After installing DelphinX, you'll have ready-to-use `Laravel`-`PostgreSQL`-`Nginx` application with in-memory key-value database `Redis` ( It's optional, don't worry ). DlephinX will accelerate your laravel applications to supersonic speed by the power of an asynchronous framework called `Swoole`
+:sparkles: DelphinX is **ready-to-use** package that allows you to speed up the process of creating your laravel application. This package is based on `Docker`. After installing DelphinX, you'll have ready-to-use `Laravel`-`PostgreSQL`-`Nginx` application with in-memory key-value database `Redis` ( It's optional, don't worry ). DelphinX will accelerate your laravel applications to supersonic speed by the power of an asynchronous framework called `Swoole`
 
 ## Installation
 1. If you don't have **Docker** and **Docker-Compose** you should **[install it](https://docs.docker.com/compose/install/)**
