@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/author-kuzuru-blue" alt="author: kuzuru">
   <img src="https://img.shields.io/npm/l/apache" alt="license: MIT">
-  <img src="https://img.shields.io/badge/version-2.0.4-informational" alt="version: 2.0.4">
+  <img src="https://img.shields.io/badge/version-2.1.8-informational" alt="version: 2.1.8">
   <img src="https://img.shields.io/github/issues/kuzuru/delphinx" alt="issues">
  </p>
  
