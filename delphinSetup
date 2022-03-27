@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+shell_exec('@echo off');
+
+echo shell_exec('composer require swooletw/laravel-swoole');
+
+echo shell_exec('php artisan vendor:publish --tag=laravel-swoole');
+
+if ( file_exists('swoole_http.php') )
+    rename('swoole_http.php', 'config/swoole_http.php');
+
+unlink(__FILE__);

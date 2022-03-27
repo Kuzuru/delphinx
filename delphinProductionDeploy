@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+
+// Defining constants
+define('SCRIPT_INFO', getrusage());
+
+/*
+ * Script execution start
+ */
+
+shell_exec('@echo off');
+
+echo "\e[1m" . "\e[96m" . "O0o0Oo ... Production deployment via DelphinX ... oO0o0Oo" . "\e[0m\n";
+
+echo "Clearing old cache files...\n\n";
+echo shell_exec('docker exec -it php-fpm php artisan optimize:clear');
+echo "\n\e[1m" . "[" . "\e[92m" . "done" . "\e[0m" . "\e[1m]" . "\e[0m\n\n";
+
+echo "Caching routes...\n\n";
+echo shell_exec('docker exec -it php-fpm php artisan route:cache');
+echo "\n\e[1m" . "[" . "\e[92m" . "done" . "\e[0m" . "\e[1m]" . "\e[0m\n\n";
+
+echo "Caching config...\n\n";
+echo shell_exec('docker exec -it php-fpm php artisan config:cache');
+echo "\n\e[1m" . "[" . "\e[92m" . "done" . "\e[0m" . "\e[1m]" . "\e[0m\n\n";
+
+echo "Caching views...\n\n";
+echo shell_exec('docker exec -it php-fpm php artisan view:cache');
+echo "\n\e[1m" . "[" . "\e[92m" . "done" . "\e[0m" . "\e[1m]" . "\e[0m\n\n";
+
+/*
+ * Script execution ended
+ */
+
+function totalTime($resourceUsage, $eta, $index)
+{
+    return ($resourceUsage["ru_$index.tv_sec"] * 1000 + intval($resourceUsage["ru_$index.tv_usec"] / 1000))
+        - ($eta["ru_$index.tv_sec"] * 1000 + intval($eta["ru_$index.tv_usec"] / 1000));
+}
+
+$resourceUsage = getrusage();
+
+$computationTime = totalTime($resourceUsage, SCRIPT_INFO, 'utime');
+$systemCallsTime = totalTime($resourceUsage, SCRIPT_INFO, 'stime');
+
+$totalTime = $computationTime + $systemCallsTime;
+
+printf('Total time: %.2f %s', ($totalTime) >= 1000 ? ($totalTime / 1000) : $totalTime, ($totalTime) >= 1000 ? 's' : 'ms');
